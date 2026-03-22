@@ -1,31 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../context/AppContext'
-import { assets, dummyDashboardData } from '../../assets/data'
+import { assets } from '../../assets/data'
 
 const Dashboard = () => {
-  const { user, currency } = useAppContext()
+  const { user, currency, axios, getToken, toast } = useAppContext()
   const [dashboardData, setDashboardData] = useState({
     bookings: [],
     totalBookings: 0,
     totalRevenue: 0,
   })
-  const getDashboardData= async ()=>{
-    setDashboardData(dummyDashboardData)
-  }
-  // const getDashboardData = async () => {
-  //   try {
-  //     const { data } = await axios.get("/api/bookings/agency", { headers: { Authorization: `Bearer ${await getToken()}` } })
-  //     if (data.success) {
-  //       // toast.success(data.dashboardData)
-  //       setDashboardData(data.dashboardData)
-  //     } else {
-  //       toast.error(data.message)
-  //     }
-  //   } catch (error) {
-  //     toast.error(error.message)
+  const getDashboardData = async () => {
+    try {
+      const { data } = await axios.get("/api/bookings/agency", { headers: { Authorization: `Bearer ${await getToken()}` } })
+      if (data.success) {
+        // toast.success(data.dashboardData)
+        setDashboardData(data.dashboardData)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
 
-  //   }
-  // }
+    }
+  }
   useEffect(() => {
     if (user) {
       getDashboardData()
@@ -60,7 +57,7 @@ const Dashboard = () => {
         </div>
         <div className="">
           {
-            dashboardData.bookings.map((booking, index) => (
+            dashboardData?.bookings?.map((booking, index) => (
               <div className="flex justify-between flex-wrap gap-2 sm:grid grid-cols-[2fr_2fr_1fr_1fr] lg:grid-cols-[0.5fr_2fr_2fr_1fr_1fr] px-6 py-3  text-gray-50 medium-14 border-b-1 border-slate-900/15" key={index}>
                 <div className="hidden lg:block">{index + 1}</div>
                 <div className="flexStart gap-x-2 max-w-64">

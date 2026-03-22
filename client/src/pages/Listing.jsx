@@ -80,6 +80,12 @@ const Listing = () => {
     return (property.city || "").toLowerCase().includes(heroDestination)
   }
   
+  const filteredProperties = useMemo(()=>{
+    return (
+    properties.filter((p)=>matchesType(p) && matchesPrice(p) && matchesSearch(p) && matchesHeroDestination(p)).sort(sortProperties)
+  )
+    
+  },[properties,selectedFilters,selectedSort,searchQuery,heroDestination])
 
 
   return (
@@ -118,7 +124,7 @@ const Listing = () => {
           </div>
         </div>
         {/* right side properties */}
-        {/* <div className="min-h-[97vh] overflow-y-scroll rounded-xl">
+        <div className="min-h-[97vh] overflow-y-scroll rounded-xl">
           {filteredProperties.length>0?(
             <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
               {filteredProperties.map((property)=>(
@@ -129,7 +135,7 @@ const Listing = () => {
           ):(
             <div className="text-center text-gray-500 mt-20">No matches found!</div>
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   )

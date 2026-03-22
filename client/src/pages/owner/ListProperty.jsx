@@ -1,36 +1,33 @@
 import React, { useEffect,useState } from 'react'
 import { useAppContext } from '../../context/AppContext'
-import { dummyProperties } from '../../assets/data'
 // import { dummyProperties } from '../../assets/data'
 
 const ListProperty = () => {
     const {axios,getToken,toast, user, currency } = useAppContext()
     const [properties, setProperties] = useState([])
-    const getProperties = async()=>{
-        setProperties(dummyProperties)
-    }
-    // const getProperties = async () => {
-    //     try {
-    //         const {data}=await axios.get("/api/properties/owner", { headers: { Authorization: `Bearer ${await getToken()}` } })
-    //         if(data.success){
-    //             setProperties(data.properties)
-    //         }else{
-    //             toast.error(data.message)
-    //         }
-    //     } catch (error) {
-    //         toast.error(error.message)
+    const getProperties = async () => {
+        try {
+            const {data}=await axios.get("/api/properties/owner", { headers: { Authorization: `Bearer ${await getToken()}` } })
+            if(data.success){
+                setProperties(data.properties)
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
             
-    //     }
-    // }
-    // const toggleAvailability = async(propertyId)=>{
-    //     const {data}=await axios.post("/api/properties/toggle-availability",{propertyId}, { headers: { Authorization: `Bearer ${await getToken()}` } })
-    //         if(data.success){
-    //             toast.success(data.properties)
-    //             getProperties()
-    //         }else{
-    //             toast.error(data.message)
-    //         }
-    // }
+        }
+    }
+    
+    const toggleAvailability = async(propertyId)=>{
+        const {data}=await axios.post("/api/properties/toggle-availability",{propertyId}, { headers: { Authorization: `Bearer ${await getToken()}` } })
+            if(data.success){
+                toast.success(data.properties)
+                getProperties()
+            }else{
+                toast.error(data.message)
+            }
+    }
     useEffect(() => {
         if (user) {
             getProperties()

@@ -32,95 +32,95 @@ const AddProperty = () => {
         }
     })
     const [loading, setLoading] = useState(false)
-    // const onSubmitHandler = async (event) => {
-    //     event.preventDefault()
-    //     if (
-    //         !inputs.title ||
-    //         !inputs.description ||
-    //         !inputs.city ||
-    //         !inputs.country ||
-    //         !inputs.address ||
-    //         !inputs.area ||
-    //         !inputs.propertyType ||
-    //         (!inputs.priceRent && !inputs.priceSale) ||
-    //         !inputs.bedrooms ||
-    //         !inputs.bathrooms
-    //     ) {
-    //         toast.error("please fill all required fields")
-    //         return
-    //     }
-    //     // check if at least 1 image is uploaded
-    //     const hasImage = Object.values(images).some((img) => img !== null)
-    //     if (!hasImage) {
-    //         toast.error("please upload atleast One image")
-    //         return
-    //     }
-    //     setLoading(true)
-    //     try {
-    //         const formData = new FormData()
-    //         formData.append("title", inputs.title)
-    //         formData.append("description", inputs.description)
-    //         formData.append("city", inputs.city)
-    //         formData.append("country", inputs.country)
-    //         formData.append("address", inputs.address)
-    //         formData.append("area", inputs.area)
-    //         formData.append("propertyType", inputs.propertyType)
-    //         formData.append("bedrooms", Number(inputs.bedrooms))
-    //         formData.append("bathrooms", Number(inputs.bathrooms))
-    //         formData.append("garages", Number(inputs.garages))
-    //         formData.append("priceRent", inputs.priceRent ? Number(inputs.priceRent) : "")
-    //         formData.append("priceSale", inputs.priceSale ? Number(inputs.priceSale) : "")
+    const onSubmitHandler = async (event) => {
+        event.preventDefault()
+        if (
+            !inputs.title ||
+            !inputs.description ||
+            !inputs.city ||
+            !inputs.country ||
+            !inputs.address ||
+            !inputs.area ||
+            !inputs.propertyType ||
+            (!inputs.priceRent && !inputs.priceSale) ||
+            !inputs.bedrooms ||
+            !inputs.bathrooms
+        ) {
+            toast.error("please fill all required fields")
+            return
+        }
+        // check if at least 1 image is uploaded
+        const hasImage = Object.values(images).some((img) => img !== null)
+        if (!hasImage) {
+            toast.error("please upload atleast One image")
+            return
+        }
+        setLoading(true)
+        try {
+            const formData = new FormData()
+            formData.append("title", inputs.title)
+            formData.append("description", inputs.description)
+            formData.append("city", inputs.city)
+            formData.append("country", inputs.country)
+            formData.append("address", inputs.address)
+            formData.append("area", inputs.area)
+            formData.append("propertyType", inputs.propertyType)
+            formData.append("bedrooms", Number(inputs.bedrooms))
+            formData.append("bathrooms", Number(inputs.bathrooms))
+            formData.append("garages", Number(inputs.garages))
+            formData.append("priceRent", inputs.priceRent ? Number(inputs.priceRent) : "")
+            formData.append("priceSale", inputs.priceSale ? Number(inputs.priceSale) : "")
 
-    //         // convert amenities ino array And keeping only enable amenities
-    //         const amenities = Object.keys(inputs.amenities).filter((key) => inputs.amenities[key])
-    //         formData.append("amenities", JSON.stringify(amenities))
+            // convert amenities ino array And keeping only enable amenities
+            const amenities = Object.keys(inputs.amenities).filter((key) => inputs.amenities[key])
+            formData.append("amenities", JSON.stringify(amenities))
 
-    //         // Adding image to formData
-    //         Object.keys(images).forEach((key) => {
-    //             images[key] && formData.append("images", images[key])
-    //         })
-    //         const { data } = await axios.post("/api/properties", formData, { headers: { Authorization: `Bearer ${await getToken()}` } })
-    //         if (data.success) {
-    //             toast.success(data.message)
-    //             // reset form after succes
-    //             setInputs({
-    //                 title: "",
-    //                 description: "",
-    //                 city: "",
-    //                 country: "",
-    //                 address: "",
-    //                 area: "",
-    //                 propertyType: "",
-    //                 priceRent: "",
-    //                 priceSale: "",
-    //                 bedrooms: "",
-    //                 bathrooms: "",
-    //                 garages: "",
-    //                 amenities: {
-    //                     Parking: false,
-    //                     Wifi: false,
-    //                     Backyard: false,
-    //                     Terrace: false,
-    //                 },
-    //             });
-    //             setImages({1:null,2:null,3:null,4:null})
-    //         }else{
-    //             toast.error(data.message)
-    //             console.log(data.message)
-    //         }
+            // Adding image to formData
+            Object.keys(images).forEach((key) => {
+                images[key] && formData.append("images", images[key])
+            })
+            const { data } = await axios.post("/api/properties", formData, { headers: { Authorization: `Bearer ${await getToken()}` } })
+            if (data.success) {
+                toast.success(data.message)
+                // reset form after succes
+                setInputs({
+                    title: "",
+                    description: "",
+                    city: "",
+                    country: "",
+                    address: "",
+                    area: "",
+                    propertyType: "",
+                    priceRent: "",
+                    priceSale: "",
+                    bedrooms: "",
+                    bathrooms: "",
+                    garages: "",
+                    amenities: {
+                        Parking: false,
+                        Wifi: false,
+                        Backyard: false,
+                        Terrace: false,
+                    },
+                });
+                setImages({1:null,2:null,3:null,4:null})
+            }else{
+                toast.error(data.message)
+                console.log(data.message)
+            }
             
-    //     } catch (error) {
-    //         toast.error(error.message)
-    //         console.log(error.message)
+        } catch (error) {
+            toast.error(error.message)
+            console.log(error.message)
 
-    //     }finally{
-    //         setLoading(false)
-    //     }
-    // }
+        }finally{
+            setLoading(false)
+        }
+    }
 
     return (
         <div className='md:px-8 py-6 xl:py-8 m-1.5 sm:m-3 h-[97vh] overflow-scroll lg:w-11/12 bg-white shadow rounded-lg'>
-            <form action="" className='flex flex-col gap-y-3.5 px-2 text-sm xl:max-w-3xl'>
+            <form onSubmit={onSubmitHandler} action="" className='flex flex-col gap-y-3.5 px-2 text-sm xl:max-w-3xl'>
 
                 <div className="w-full">
                     <h5 className="h5">Property Name</h5>

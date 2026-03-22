@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { useParams } from 'react-router-dom'
-import PropertyImage from '../components/PropertyImage'
 import { assets } from '../assets/data'
+import toast from 'react-hot-toast'
+import PropertyImage from '../components/PropertyImage'
 
-const PropertyDetail = () => {
-    const { properties, currency } = useAppContext()
+const PropertyDetails = () => {
+    const { properties, currency, navigate, getToken, axios } = useAppContext()
     const [property, setProperty] = useState(null)
     const { id } = useParams()
     const [checkInDate, setCheckInDate] = useState(null)
@@ -13,22 +14,74 @@ const PropertyDetail = () => {
     const [guests, setGuests] = useState(1)
     const [isAvailable, setIsAvailable] = useState(false)
 
+    const checkAvailability = async () => {
+        try {
+            if(checkInDate > checkOutDate){
+                toast.error("checkInDate should be less than checkOutDate")
+            }
+            const {data}=await axios.post("/api/bookings/check-availability",{property:id,checkInDate,checkOutDate})
+            if(data.success){
+                if(data.isAvailable){
+                    setIsAvailable(true)
+                    toast.success("Property is Availble")
+                }else{
+                    setIsAvailable(false)
+                    toast.error("Property is not Availble")
+                }
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error);
+        }
+    }
+    const onSubmitHandler = async(e)=>{
+        try {
+            e.preventDefault()
+            if(!isAvailable){
+                return checkAvailability()
+            }else{
+                const {data}=await axios.post("/api/bookings/book",{
+                    property: id,
+                    checkInDate,
+                    checkOutDate,
+                    guests,
+                    paymentMethod:"Pay at Check-in"
+                },{
+                    headers:{Authorization:`Bearer ${await getToken()}`},
+                });
+                if(data.success){
+                    toast.success(data.message)
+                    navigate('/my-bookings')
+                    scrollTo(0,0)
+                }else{
+                    toast.error(data.message)
+                }
+            }
+        } catch (error) {
+            toast.error(error.message)
+            
+        }
+    }
+
+
+
+
     useEffect(() => {
-        const property = properties.find((property) => property._id === id);
-        property && setProperty(property) // Replace with logic to get property by ID
-    }, [properties])
+        const property = properties.find((property) => property._id === id)
+        property && setProperty(property)
+    }, [properties,id])
     return (
         property && (
             <div className="bg-gradient-to-r from-[#fffbee] to-white py-16 pt-28">
                 <div className="max-padd-container">
                     {/* image */}
                     <PropertyImage property={property} />
-                    {/* container */}
                     <div className="flex flex-col xl:flex-row gap-8 mt-6">
                         {/* left side */}
                         <div className="p-4 flex-2 rounded-xl border border-slate-900/10">
-                            <p className="flexStart gap-x-2">
-                                <img src={assets.pin} alt="" />
+                            <p className='flexStart gap-x-2'>
+                                <img src={assets.pin} width={19} alt="" />
                                 <span>{property.address}</span>
                             </p>
                             <div className="flex justify-between flex-col sm:flex-row sm:items-end mt-3">
@@ -80,35 +133,36 @@ const PropertyDetail = () => {
                                 ))}
                             </div>
                             {/* form | check availibilty */}
-                            <form action="" className=' text-gray-500 bg-secondary/10 rounded-lg px-6 py-4 flex flex-col lg:flex-row gap-4  max-w-md lg:max-w-full ring-1 ring-slate-900/10 relative mt-10'>
+                            <form onSubmit={onSubmitHandler} action="" className=' text-gray-500 bg-secondary/10 rounded-lg px-6 py-4 flex flex-col lg:flex-row gap-4  max-w-md lg:max-w-full ring-1 ring-slate-900/10 relative mt-10'>
                                 <div className="flex flex-col w-full">
                                     <div className="flex items-center gap-2">
                                         <img src={assets.calendar} alt="" width={20} />
                                         <label htmlFor="checkInDate">Check in</label>
                                     </div>
-                                    <input onChange={(e) => setCheckInDate(e.target.value)} min={new Date().toISOString().split("T")[0]} type="date" id='checkInDate' className='rounded bg-secondary/10 border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none' />
+                                    <input onChange={(e)=>setCheckInDate(e.target.value)} min={new Date().toISOString().split("T")[0]}  type="date" id='checkInDate' className='rounded bg-secondary/10 border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none' />
                                 </div>
                                 <div className="flex flex-col w-full">
                                     <div className="flex items-center gap-2">
                                         <img src={assets.calendar} alt="" width={20} />
                                         <label htmlFor="checkOutDate">Check out</label>
                                     </div>
-                                    <input onChange={(e) => setCheckOutDate(e.target.value)}
-                                        min={checkInDate} type="date" id='checkOutDate' disabled={!checkInDate} className='rounded bg-secondary/10 border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none' />
+                                    <input onChange={(e)=>setCheckOutDate(e.target.value)}
+                                    min={checkInDate}  type="date" id='checkOutDate' disabled={!checkInDate} className='rounded bg-secondary/10 border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none' />
                                 </div>
                                 <div className="flex flex-col w-full">
                                     <div className="flex items-center gap-2">
                                         <img src={assets.user} alt="" width={20} />
                                         <label htmlFor="guests">Guests</label>
                                     </div>
-                                    <input onChange={(e) => setGuests(e.target.value)} value={guests} min={1} max={4} type="number" id='guests' className='rounded bg-secondary/10 border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none' placeholder='0' />
+                                    <input onChange={(e)=>setGuests(e.target.value)} value={guests} min={1} max={4} type="number" id='guests' className='rounded bg-secondary/10 border border-gray-200 px-3 py-1.5 mt-1.5 text-sm outline-none' placeholder='0' />
                                 </div>
                                 <button type='submit' className='flexCenter gap-1 rounded-md btn-dark min-w-44'>
                                     <img src={assets.search} width={20} className='invert' alt="" />
-                                    <span>{isAvailable ? "Book Property" : "Check Dates"}</span>
+                                    <span>{isAvailable ? "Book Property":"Check Dates"}</span>
                                 </button>
                             </form>
                         </div>
+                        {/* right side */}
                         <div className="flex-1 max-w-sm">
                             <div className="p-6 rounded-xl border border-slate-900/10">
                                 <h4 className="h4 mb-3">Contact Agent</h4>
@@ -162,4 +216,4 @@ const PropertyDetail = () => {
     )
 }
 
-export default PropertyDetail 
+export default PropertyDetails
