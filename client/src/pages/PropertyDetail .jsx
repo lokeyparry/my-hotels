@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { useParams } from 'react-router-dom'
+// import PropertyImages from './PropertyImages'
 import { assets } from '../assets/data'
 import toast from 'react-hot-toast'
 import PropertyImage from '../components/PropertyImage'

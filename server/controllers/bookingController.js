@@ -52,33 +52,33 @@ export const bookingCreate = async(req, res) => {
 
         totalPrice *= nights
         const booking = await Booking.create({
-            user,
-            property,
-            agency: propertyData.agency._id,
-            guests: +guests,
-            checkInDate,
-            checkOutDate,
-            totalPrice
-        })
-        const mailOptions = {
-            from: process.env.SENDER_EMAIL,
-            to: req.user.email,
-            subject: "Property Booking/sale Details",
-            html: `
-            <h2>Your Booking Details</h2>
-            <p>Thank You for your Booking! Below are your booking details:</p>
-            <ul>
-            <li><strong>Booking ID:</strong>${booking._id}</li>
-            <li><strong>Agency Name:</strong>${propertyData.agency.name}</li>
-            <li><strong>Location:</strong>${propertyData.address}</li>
-            <li><strong>Date:</strong>${booking.checkInDate.toDateString()}</li>
-            <li><strong>Booking Amount:</strong>${process.env.CURRENCY || $}${booking.totalPrice} for ${nights} nights</li>
-            </ul>
-            <p>We are excited to welcome you soon.</p>
-            <p>Need to change somthing? Contact us.</p>
-            `
-        }
-        await transporter.sendMail(mailOptions)
+                user,
+                property,
+                agency: propertyData.agency._id,
+                guests: +guests,
+                checkInDate,
+                checkOutDate,
+                totalPrice
+            })
+            // const mailOptions = {
+            //     from: process.env.SENDER_EMAIL,
+            //     to: req.user.email,
+            //     subject: "Property Booking/sale Details",
+            //     html: `
+            //     <h2>Your Booking Details</h2>
+            //     <p>Thank You for your Booking! Below are your booking details:</p>
+            //     <ul>
+            //     <li><strong>Booking ID:</strong>${booking._id}</li>
+            //     <li><strong>Agency Name:</strong>${propertyData.agency.name}</li>
+            //     <li><strong>Location:</strong>${propertyData.address}</li>
+            //     <li><strong>Date:</strong>${booking.checkInDate.toDateString()}</li>
+            //     <li><strong>Booking Amount:</strong>${process.env.CURRENCY || $}${booking.totalPrice} for ${nights} nights</li>
+            //     </ul>
+            //     <p>We are excited to welcome you soon.</p>
+            //     <p>Need to change somthing? Contact us.</p>
+            //     `
+            // }
+            // await transporter.sendMail(mailOptions)
         res.json({ success: true, message: "Booking created successfully" })
 
     } catch (error) {
